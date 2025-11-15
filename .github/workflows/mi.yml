@@ -10,20 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create SSH private key
+      - name: Create SSH private key from GitHub Secret
         run: |
-          cat > vm_key.pem << 'EOF'
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACBJrezAIFi7fBoYLGyCAirQf/TahIISuPVykWvyRO8CpgAAAKAHeNftB3jX
-7QAAAAtzc2gtZWQyNTUxOQAAACBJrezAIFi7fBoYLGyCAirQf/TahIISuPVykWvyRO8Cpg
-AAAED+XxZoEJvQG7Dkldk2FGcnQtXII0ZZAcRhNswNDURK+Emt7MAgWLt8GhgsbIICKtB/
-9NqEghK49XKRa/JE7wKmAAAAHGVzaHdhckBtaWRkbGV3YXJldGFsZW50cy5jb20B
------END OPENSSH PRIVATE KEY-----
-
-EOF
+          echo "$SSH_key" > vm_key.pem
           chmod 600 vm_key.pem
+        env:
+          SSH_KEY: ${{ secrets.SSH_key }}
 
       - name: Test SSH connection
         run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem username@your_vm_ip 'echo Connection Successful'
+          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "echo 'Connection Successful'"
