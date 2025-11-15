@@ -12,11 +12,12 @@ jobs:
     steps:
       - name: Create SSH private key from GitHub Secret
         run: |
-          echo "$SSH_key" > vm_key.pem
+          echo "$SSH_KEY" > vm_key.pem
           chmod 600 vm_key.pem
         env:
-          SSH_KEY: ${{ secrets.SSH_key }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Test SSH connection
         run: |
           ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "echo 'Connection Successful'"
+
