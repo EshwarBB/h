@@ -20,7 +20,7 @@ jobs:
       - name: Create SSH private key
         run: |
           echo "Creating SSH key..."
-          cat << 'EOF' > vm_key.pem
+          cat > vm_key.pem << 'EOF'
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
 QyNTUxOQAAACBJrezAIFi7fBoYLGyCAirQf/TahIISuPVykWvyRO8CpgAAAKAHeNftB3jX
@@ -33,7 +33,7 @@ EOF
 
       - name: Test SSH Connection
         run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.155.62.78 "echo 'Connected successfully'"
+          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "echo 'Connected successfully'"
 
       - name: Clone repository
         run: |
@@ -42,11 +42,11 @@ EOF
 
       - name: Transfer ZIP to VM
         run: |
-          scp -o StrictHostKeyChecking=no -i vm_key.pem eshwar_splunk.zip harness@4.155.62.78:/tmp/
+          scp -o StrictHostKeyChecking=no -i vm_key.pem eshwar_splunk.zip harness@4.246.92.100:/tmp/
 
       - name: Deploy to Splunk Apps folder
         run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.155.62.78 "
+          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "
             sudo mv /tmp/eshwar_splunk.zip /opt/splunk/etc/apps/ &&
             cd /opt/splunk/etc/apps/ &&
             sudo unzip -o eshwar_splunk.zip &&
@@ -57,5 +57,4 @@ EOF
         run: |
           rm -f vm_key.pem
           rm -f eshwar_splunk.zip
-          echo "Pipeline completed successfully."
-
+          echo 'Pipeline completed successfully.'
