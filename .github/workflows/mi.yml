@@ -1,25 +1,17 @@
-name: New Workflow
+name: SSH Test Workflow
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  ssh-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Install required packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y zip unzip sshpass
-
       - name: Create SSH private key
         run: |
-          echo "Creating SSH key..."
           cat > vm_key.pem << 'EOF'
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
@@ -28,33 +20,10 @@ QyNTUxOQAAACBJrezAIFi7fBoYLGyCAirQf/TahIISuPVykWvyRO8CpgAAAKAHeNftB3jX
 AAAED+XxZoEJvQG7Dkldk2FGcnQtXII0ZZAcRhNswNDURK+Emt7MAgWLt8GhgsbIICKtB/
 9NqEghK49XKRa/JE7wKmAAAAHGVzaHdhckBtaWRkbGV3YXJldGFsZW50cy5jb20B
 -----END OPENSSH PRIVATE KEY-----
+
 EOF
           chmod 600 vm_key.pem
 
-      - name: Test SSH Connection
+      - name: Test SSH connection
         run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "echo 'Connected successfully'"
-
-      - name: Clone repository
-        run: |
-          git clone https://github.com/EshwarBB/middleware_demo1.git eshwar_splunk
-          zip -r eshwar_splunk.zip eshwar_splunk
-
-      - name: Transfer ZIP to VM
-        run: |
-          scp -o StrictHostKeyChecking=no -i vm_key.pem eshwar_splunk.zip harness@4.246.92.100:/tmp/
-
-      - name: Deploy to Splunk Apps folder
-        run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@4.246.92.100 "
-            sudo mv /tmp/eshwar_splunk.zip /opt/splunk/etc/apps/ &&
-            cd /opt/splunk/etc/apps/ &&
-            sudo unzip -o eshwar_splunk.zip &&
-            sudo rm -f eshwar_splunk.zip
-          "
-
-      - name: Cleanup
-        run: |
-          rm -f vm_key.pem
-          rm -f eshwar_splunk.zip
-          echo 'Pipeline completed successfully.'
+          ssh -o StrictHostKeyChecking=no -i vm_key.pem username@your_vm_ip 'echo Connection Successful'
